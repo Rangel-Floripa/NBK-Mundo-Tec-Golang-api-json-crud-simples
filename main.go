@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
-	
 )
 
 type Livro struct{
@@ -52,12 +52,16 @@ func listarLivros(w http.ResponseWriter, r *http.Request){
 
 func cadastrarLivro(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
-	
+	body, _ := ioutil.ReadAll(r.Body)
 
+	var novoLivro Livro
+	json.Unmarshal(body, &novoLivro)
+	novoLivro.Id = len(Livros) + 1
+	Livros = append(Livros, novoLivro)
 	encoder := json.NewEncoder(w)
-	encoder.Encode(Livros[0])
-
+	encoder.Encode(novoLivro)
 }
+
 
 func rotearLivros(w http.ResponseWriter, r *http.Request ){
 	if r.Method ==  "GET" {
